@@ -1,0 +1,7 @@
+-- build example --
+  cmake . (not cmake .. as usual) to build in this directory
+  make
+  ./ninja
+
+-- run --
+  please check: plugins.cfg

@@ -1,0 +1,45 @@
+material myExamples/myJupiter
+{
+        technique
+        {
+                pass
+                {
+                        texture_unit
+                        {
+                                texture jupiter-1k.png
+                                env_map spherical
+                        }
+
+                }
+        }
+}
+
+material myExamples/myJupiter2
+{
+        technique
+        {
+                pass
+                {
+                        texture_unit
+                        {
+                                texture jupiter-1k.png
+                        }
+
+                }
+        }
+}
+
+material myExamples/myMars
+{
+        technique
+        {
+                pass
+                {
+                        texture_unit
+                        {
+                                texture marsmap.jpg
+                        }
+
+                }
+        }
+}

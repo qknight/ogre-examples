@@ -1,0 +1,29 @@
+fragment_program glow_ps_glsl glsl
+{
+    source ps_glow.glsl
+    entry_point main
+    profiles ps_2_0 arbfp1
+    default_params
+    {
+        param_named alpha_value float 0.4
+        param_named_auto time time_0_x 100
+    }
+}
+
+material glsl/glow
+{
+    technique
+    {
+        pass
+        {
+            scene_blend alpha_blend
+            depth_check on
+            lighting off
+
+            fragment_program_ref glow_ps_glsl
+            {
+            }
+        }
+
+    }
+}

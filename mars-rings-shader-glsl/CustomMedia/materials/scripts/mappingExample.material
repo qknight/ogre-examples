@@ -1,0 +1,14 @@
+material myExamples/myMars
+{
+        technique
+        {
+                pass
+                {
+                        texture_unit
+                        {
+                                texture marsmap.jpg
+                        }
+
+                }
+        }
+}

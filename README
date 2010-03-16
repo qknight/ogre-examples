@@ -1,0 +1,213 @@
+============= the purpose of this project ================
+since the 'ogre samples' (i like to call them examples from now on) are bad in regard to
+educational purpose i wrote some exsamples on my own. 
+
+with these sets of examples you are welcome to experiment directly. you can alter the code
+and instantly see the effects, just explore some cmake magic and the code of course.
+use my examples for whatever you like them to but watch out, i've used some third party
+examples and i'm not sure which license covers their code. most were from the ogre wiki.
+
+anyway i would like to share them with you. if you have comments, please write
+an email to me: Joachim Schiele <js@lastlog.de>
+
+you are free to do with the examples i wrote for whatever purpose you want, i
+put them (that is only the code i've written) into public domain. 
+
+  please note: i also use libraries which DO have different license terms as ogre/ois 
+               or boost or network libraries, please take that also into account!
+
+final note: 
+  - this examples should be cross platform (win/lin/mac). 
+    i guess minor adaption might be needed in some cases.
+  - all my examples worked at my elitebook 8530w using nVidia Corporation G96M [Quadro FX 770M]
+    with x11-drivers/nvidia-drivers-190.53-r1, see screenshots found in the examples
+  - mars-1k.png and jupiter-1k.png texture taken from: http://orsa.sourceforge.net/download.html
+    and renamed
+
+Have fun,
+Joachim Schiele <js@lastlog.de>
+
+ps: in general have a look at the ogre wiki where you can find a lot of helpful stuff as for instance:
+  http://www.ogre3d.org/wiki/index.php/CodeSnippets
+
+============= how to build the examples ================
+--- scenario 1 ---
+cd mars
+cmake .
+make
+configure plugins.cfg manually 
+./mars
+
+--- scenario 2 ---
+optionally you can use a build directly, in that case you can set a symlink like this:
+cd mars
+mkdir build
+cd build
+cmake .. (note that it is '..' not '.')
+make
+cd ..
+configure plugins.cfg manually
+ln -s build/mars
+./mars
+
+============= the examples in detail ================
+all examples use cmake and a minimized set of CustomMedia files as textures and other stuff. most
+are copied from the ogre examples and then extended, so what is this about:
+
+ninja - basically tutorial 2
+
+ninja-camera - moveable camera but basically the same as ninja
+  - use the keyboard/mouse to move the camera
+  - LMB to toggle the light source
+
+ninja-camera-gamepad-sdl - fly around using the mouse/keyboard or joystick/gamepad (using sdl joy support)
+  - you can only query the state of the joystick on each framelistener update (unbuffered input) which has drawbacks:
+    - no event interface (since the 'SDL Event interface' can only be used if SDL has an active main event loop, 
+      which is obviously not the case here, it can't be used that way)
+    - since we don't have an event interface we have a keypress event every frame, we have to track keyPress
+      and keyRelese on our own, see how it is done for the light using button0state bool variable
+    - using combos as pressing two keys at the same time can be tracked as well but is a bit more complex
+      and not done in this example
+    - input of the gamepad is dependant on the fps of the gpu which is annoying
+    - some buttons on the ps3 controller are pressure sensitive, with SDL this could be used but is not
+      in the scope of this example 
+  - there is still some 'OIS joystick' code from the ogre example framework included but NOT used
+  - WARNING: i consider this code a hack and more as a prove of concept using sdl. please refactor this code
+             for your own project and use classes to handle the events, probably better do not use SDL at all 
+             but use OIS instead. there is an OIS sdl backend, maybe this would be a good way to use sdl 
+             indirectly while having nice interfaces to work with
+  - WARNING: check for permissions of /dev/input/js0 and use jstest coming with: games-util/joystick-20060731
+             on gentoo (for instance)
+
+ninja-camera-gamepad-ois - fly around using the mouse/keyboard or joystick/gamepad (using ois joy support)
+  - this example didn't work every good with my gamepad, i had some stuttering with the axes moving the cam?!
+    however: it worked and it might be my gamepad or any other random issue i couldn't fix
+  - unlike the sdl example this is using a (buffered input) system with callbacks
+    you can do all you want with both systems so just pick the one you think which results in better code design
+  - please check your permissions of /dev/input/eventX where X is you gamepad device 
+    (OIS does not use the /dev/input/js0 device at all, at least for ois 1.2), use the ois/demos/ConsoleApp to
+    evaluate the funcionality of the gamepad using OIS (you can find this nice program in the OIS source distribution). 
+    -> you might have to download ois-1.2 and compile it on your own dependent on your package manager - 
+    at least on gentoo this was not part of the package of ois
+
+mars - different texture mapping techniques for a sphere 
+  - there are three spheres:
+    - mars:          this one is textured just fine
+    - big jupiter:   wrongly textured: using sphere.mesh with a custom texture
+                     and move the camara since it is a motion issue mainly
+    - small jupiter: this one is textured just fine
+
+---- ogre and shaders ----
+now we will have a look at how ogre handles shaders:
+
+see: http://www.ogre3d.org/forums/viewtopic.php?p=304338 for further reading
+ 1. shaders are used together with materials, so first thing is to create a material which uses a shader
+ 2. the shaders are given as sourcecode but are compiled on demand which means that
+ 3. you do not need to compile the shaders using cgc (for cg shaders) manually but you 'can'.
+ 4. cg shaders are compiled right before the material is actually used which means that the load time 
+    of ogre might increase (not much though). the point is: you don't precompile them compared to 
+    libOgre or your application using libOgre in the first place!
+ 5. please note: there are several card types with different levels of shader support. not all shaders
+    will work everywhere. there is hlsl (windows) and glsl (linux) and cg (both - but nvidia only).
+ 6. read on:
+    http://www.ogre3d.org/wiki/index.php/How_To_Compile_CG_Files
+    http://www.vis.uni-stuttgart.de/glsldevil/ (i've not used this but it looks interesting)
+
+    one example using cgc (with linux):
+         % cgc -entry main -profile ps_2_0 ps_glow.cg       
+         ps_glow.cg                                         
+         15 lines, 0 errors.
+         ps_2_0
+         // cgc version 2.1.0017, build date Feb 17 2009
+         // command line args: -profile ps_2_0
+         // source file: ps_glow.cg
+         //vendor NVIDIA Corporation
+         //version 2.1.0.17
+         //profile ps_2_0
+         //program main
+         //semantic main.alpha_value
+         //semantic main.time
+         //var float alpha_value :  : c[0] : 0 : 1
+         //var float time :  : c[1] : 1 : 1
+         //var float4 main : $vout.COLOR : COL : -1 : 1
+         //const c[2] = -0.020833334 -0.125 1 0.5
+         //const c[3] = -1.5500992e-06 -2.1701389e-05 0.0026041667 0.00026041668
+         //const c[4] = 0.79577452 0.5 6.283185 -3.141593
+         //const c[5] = 0.31847131 1 0
+         def c2, -0.02083333, -0.12500000, 1.00000000, 0.50000000
+         def c3, -0.00000155, -0.00002170, 0.00260417, 0.00026042
+         def c4, 0.79577452, 0.50000000, 6.28318501, -3.14159298
+         def c5, 0.31847131, 1.00000000, 0.00000000, 0
+         mov r0.x, c1
+         mad r0.x, r0, c4, c4.y
+         frc r0.x, r0
+         mad r0.x, r0, c4.z, c4.w
+         sincos r1.xy, r0.x, c3.xyzw, c2.xyzw
+         mad r0.x, r1.y, c5, c5.y
+         mul r0.x, r0, c0
+         mov r1.y, c5
+         mov r1.xz, c5.z
+         mul r1.w, r0.x, c2
+         mov oC0, r1
+
+         as you can see we get some asm output with 0 errors (see above the code)
+
+         when you see this, the shader did compile successfully! the -profile switch
+         is very important and it has to match your system (gpu specs) to make it work
+         since this is only a software compiler (independant of the gpu) it might compile
+         on your platform but the shader might not be usable as your gpu might not support
+         it - just keep that in mind!
+  7. again - you do not need to compile the shader to use it in ogre as it is done automatically on
+     runtime. but it can be helpful for shader authors to see if it compiles without having to start
+     ogre every time.
+  8. issues with the rings:
+     - if there are no rings at all (compare the output of the shader using examples to the mars-rings 
+       example) then it is not working 
+     - the rings should actually be drawn in green (if they are white, the shader does not work)
+  9. (see Ogre.log or the console output when starting the program)
+     common errors when running ogre when wanting to use shaders are: 
+     - Pass 0: Vertex program glow_vs_cg cannot be used - compile error.
+       which basically means your code can't be compiled
+     - 0(1) : warning C7557: OpenGL does not allow Cg-style semantics
+       when you try to copy the code of a cg based shader and want to use it as glsl without converting it 
+       properly - the way it is expected (write glsl code NOT cg code)
+     - WARNING: material cg/glow has no supportable Techniques and will be blank. Explanation: 
+       Pass 0: Vertex program glow_vs_cg cannot be used - not supported.
+       this error probably indicates that you want to use a cg program but you did not add support
+       in ogre for using cg in general. you get this error once per material.
+        - just compile ogre with cg support (requires media-gfx/nvidia-cg-toolkit on gentoo)
+        - also you need to modify the plugins.cfg to use cg
+          Plugin=Plugin_CgProgramManager.so     <- add this to plugins.cfg and restart your application
+
+mars-rings - drawing line segments to approximate a circle
+  - this example is not using shaders but both later example build on this source base so you can
+    easily spot the differences in code (which are minor)!
+  - there are several rings and beginning at the inner ring the number of segments used to approximate
+    a round circle increases. steppings used are:  4,16,32,64,128.
+    http://www.ogre3d.org/wiki/index.php/DynamicLineDrawing
+  - other documentation, which is related:
+    http://www.ogre3d.org/wiki/index.php/DynamicGrowingBuffers
+    http://www.ogre3d.org/wiki/index.php/Line3D
+
+mars-rings-cg-shader - shader using cg
+  - check your plugins.cfg to have Plugin=Plugin_CgProgramManager.so, also check if cg support has loaded
+    which can be found out either by looking at stdout/stderr or into Ogre.log
+  - check if the shader has been loaded, if something went wrong there is a error about not beeing able
+    to load the shader once per material script referencing a cg shader
+  - the rings should actually be drawn in green (if they are white, the shader does not work)
+  - the rings' colors should pulsate - that means the color intensity should be modulated by a sinus and realtime
+  - links:
+    - http://www.ogre3d.org/forums/viewtopic.php?p=304338
+ 
+mars-rings-glsl-shader - shader using glsl
+  - this is basically the same code but instead of using cg we use glsl here
+  - both the cg code and the glsl code is included in this project
+  - again, if the rings are white it does not work and you should check your configuration
+  - links:
+    - http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/loading.php
+      how to code a basic glsl shader
+    - http://www.ogre3d.org/docs/manual/manual_23.html#SEC125
+      how to pass parameters to the glsl shader using a ogre 3d material script
+    - glsl shader adapted from: http://www.ogre3d.org/forums/viewtopic.php?p=304338
+
+have fun!

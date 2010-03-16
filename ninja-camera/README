@@ -1,0 +1,9 @@
+-- source concept --
+  http://www.ogre3d.org/wiki/index.php/Basic_Tutorial_5
+-- build example --
+  cmake . (not cmake .. as usual) to build in this directory
+  make
+  ./ninja-camera
+
+-- run --
+  please check plugins.cfg

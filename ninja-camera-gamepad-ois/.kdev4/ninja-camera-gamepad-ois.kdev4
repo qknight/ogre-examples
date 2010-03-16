@@ -1,0 +1,29 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x000\x00n\x00i\x00n\x00j\x00a\x00-\x00c\x00a\x00m\x00e\x00r\x00a\x00-\x00g\x00a\x00m\x00e\x00p\x00a\x00d\x00-\x00o\x00i\x00s)
+
+[CMake]
+BuildDirs=/home/joachim/Desktop/projects/ogre-examples/ninja-camera-gamepad-ois/build
+CMakeDir=/usr/share/cmake/Modules
+Current CMake Binary=file:///usr/bin/cmake
+CurrentBuildDir=file:///home/joachim/Desktop/projects/ogre-examples/ninja-camera-gamepad-ois/build
+CurrentBuildType=
+CurrentInstallDir=
+ProjectRootRelative=./
+
+[Launch]
+Launch Configurations=Launch Configuration 0
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=New Native Application Configuration
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Arguments=
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+Dependency Action=Nothing
+EnvironmentGroup=default
+Executable=file:///home/joachim/Desktop/projects/ogre-examples/ninja-camera-gamepad-ois/build/ninja-camera-gamepad-ois
+Working Directory=file:///home/joachim/Desktop/projects/ogre-examples/ninja-camera-gamepad-ois/
+isExecutable=true
