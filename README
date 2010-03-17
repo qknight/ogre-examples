@@ -30,6 +30,9 @@ Joachim Schiele <js@lastlog.de>
 ps: in general have a look at the ogre wiki where you can find a lot of helpful stuff as for instance:
   http://www.ogre3d.org/wiki/index.php/CodeSnippets
 
+pps: see also
+  http://invalidmagic.wordpress.com/category/ogre3d/
+
 ============= how to build the examples ================
 --- scenario 1 ---
 cd mars
